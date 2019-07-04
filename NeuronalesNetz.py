@@ -4,29 +4,39 @@ import scipy.special as scsp
 """
 
 __author__ = "Bastian Kersting"
-__version__ = "1.2"
+__version__ = "1.3
 
 """
 
 
 class NeuronalesNetz:
 
-    def __init__(self, in_nodes, out_nodes, hid_nodes, hid_layers, lr, activation_func, model, load_from_model = False):
-        # Initialising all the input parameters
-        self.in_nodes = in_nodes
-        self.out_nodes = out_nodes
-        self.hid_nodes = hid_nodes
-
-        # Hidden layer parameter must be decremented by one
-        self.hid_layers = hid_layers - 1
-        self.learn_rate = lr
-
-        # Decide whether to load from a model (must be an array wth all the matrices) or to initialize a new network
+    def __init__(self, in_nodes, out_nodes, hid_nodes, hid_layers, lr, activation_func, model, load_from_model=False):
+        # Decide whether to load from a model (must be an array with all the matrices) or to initialize a new network
         if load_from_model:
+            # Initialising all the input parameters
+            self.in_nodes = model[0].shape[1]
+            self.out_nodes = model[2].shape[1]
+            self.hid_nodes = model[1][0].shape[1]
+
+            self.hid_layers = model[1].shape[0]
+
+            self.learn_rate = lr
+
+            # Initialize all the weight matrices which were given by the model
             self.weight_input_hidden = model[0]
             self.weight_hidden = model[1]
             self.weight_hidden_output = model[2]
         else:
+            # Initialising all the input parameters
+            self.in_nodes = in_nodes
+            self.out_nodes = out_nodes
+            self.hid_nodes = hid_nodes
+
+            # Hidden layer parameter must be decremented by one
+            self.hid_layers = hid_layers - 1
+            self.learn_rate = lr
+
             # Initialising all the weight matrices with values in a probability distribution
             # around 0 and 1 / sqrt(number of incoming links)
             # First initialize weights between input and hidden layer(s)
@@ -34,10 +44,12 @@ class NeuronalesNetz:
 
             # Then the weights between the hidden layers
             self.weight_hidden = np.asarray(
-                [np.random.normal(0.0, pow(hid_nodes, -0.5), (self.hid_nodes, hid_nodes)) for _ in range(self.hid_layers)])
+                [np.random.normal(0.0, pow(hid_nodes, -0.5), (self.hid_nodes, hid_nodes)) for _ in
+                 range(self.hid_layers)])
 
             # And last but not least the weights between the last hidden layer and the output layer
-            self.weight_hidden_output = np.random.normal(0.0, pow(self.out_nodes, -0.5), (self.out_nodes, self.hid_nodes))
+            self.weight_hidden_output = np.random.normal(0.0, pow(self.out_nodes, -0.5),
+                                                         (self.out_nodes, self.hid_nodes))
 
         # Initialisation of the activation function and its derivative
         if activation_func == "sigmoid":
@@ -110,6 +122,8 @@ class NeuronalesNetz:
         pass
 
     def save(self, filename):
+        # Saves all the weight matrices to reuse them later. To open them again, the matrices
+        # must be in exactly this style
         matrices = np.asarray([self.weight_input_hidden, self.weight_hidden, self.weight_hidden_output])
         np.save(filename, matrices)
 
