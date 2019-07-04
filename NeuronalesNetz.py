@@ -11,7 +11,7 @@ __version__ = "1.2"
 
 class NeuronalesNetz:
 
-    def __init__(self, in_nodes, out_nodes, hid_nodes, hid_layers, lr, activation_func):
+    def __init__(self, in_nodes, out_nodes, hid_nodes, hid_layers, lr, activation_func, model, load_from_model = False):
         # Initialising all the input parameters
         self.in_nodes = in_nodes
         self.out_nodes = out_nodes
@@ -21,17 +21,23 @@ class NeuronalesNetz:
         self.hid_layers = hid_layers - 1
         self.learn_rate = lr
 
-        # Initialising all the weight matrices with values in a probability distribution
-        # around 0 and 1 / sqrt(number of incoming links)
-        # First initialize weights between input and hidden layer(s)
-        self.weight_input_hidden = np.random.normal(0.0, pow(self.in_nodes, -0.5), (self.hid_nodes, self.in_nodes))
+        # Decide whether to load from a model (must be an array wth all the matrices) or to initialize a new network
+        if load_from_model:
+            self.weight_input_hidden = model[0]
+            self.weight_hidden = model[1]
+            self.weight_hidden_output = model[2]
+        else:
+            # Initialising all the weight matrices with values in a probability distribution
+            # around 0 and 1 / sqrt(number of incoming links)
+            # First initialize weights between input and hidden layer(s)
+            self.weight_input_hidden = np.random.normal(0.0, pow(self.in_nodes, -0.5), (self.hid_nodes, self.in_nodes))
 
-        # Then the weights between the hidden layers
-        self.weight_hidden = np.asarray(
-            [np.random.normal(0.0, pow(hid_nodes, -0.5), (self.hid_nodes, hid_nodes)) for _ in range(self.hid_layers)])
+            # Then the weights between the hidden layers
+            self.weight_hidden = np.asarray(
+                [np.random.normal(0.0, pow(hid_nodes, -0.5), (self.hid_nodes, hid_nodes)) for _ in range(self.hid_layers)])
 
-        # And last but not least the weights between the last hidden layer and the output layer
-        self.weight_hidden_output = np.random.normal(0.0, pow(self.out_nodes, -0.5), (self.out_nodes, self.hid_nodes))
+            # And last but not least the weights between the last hidden layer and the output layer
+            self.weight_hidden_output = np.random.normal(0.0, pow(self.out_nodes, -0.5), (self.out_nodes, self.hid_nodes))
 
         # Initialisation of the activation function and its derivative
         if activation_func == "sigmoid":
