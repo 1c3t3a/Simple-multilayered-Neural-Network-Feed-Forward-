@@ -1,6 +1,13 @@
 import numpy as np
 import scipy.special as scsp
 
+"""
+
+__author__ = "Bastian Kersting"
+__version__ = "1.2"
+
+"""
+
 
 class NeuronalesNetz:
 
@@ -91,6 +98,13 @@ class NeuronalesNetz:
                 np.transpose(hidden_vals[reverse - index - 1]) if index < reverse else np.transpose(val_in))
 
         # And then for the first layer
-        self.weight_input_hidden += self.learn_rate * np.dot(errors[len(errors) - 1] * self.derivative_func(val_in),
+        self.weight_input_hidden += self.learn_rate * np.dot(errors[-1] * self.derivative_func(val_in),
                                                              np.transpose(x))
+
+        pass
+
+    def save(self, filename):
+        matrices = np.asarray([self.weight_input_hidden, self.weight_hidden, self.weight_hidden_output])
+        np.save(filename, matrices)
+
         pass
