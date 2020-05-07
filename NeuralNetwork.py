@@ -9,9 +9,9 @@ __version__ = "1.3
 """
 
 
-class NeuronalesNetz:
+class NeuralNetwork:
 
-    def __init__(self, in_nodes, out_nodes, hid_nodes, hid_layers, lr, activation_func, model, load_from_model=False):
+    def __init__(self, in_nodes, out_nodes, hid_nodes, hid_layers, lr, activation_func, model=None, load_from_model=False):
         # Decide whether to load from a model (must be an array with all the matrices) or to initialize a new network
         if load_from_model:
             # Initialising all the input parameters
